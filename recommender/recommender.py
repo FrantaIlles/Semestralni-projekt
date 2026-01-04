@@ -48,9 +48,11 @@ class Recommender:
         return best_book
     
     @staticmethod
-    def recommend_from_params(books, category=None, author=None, min_pages=None):
+    def recommend_from_params(books,title = None, category=None, author=None, min_pages=None):
 
         for b in books:
+            if title and title.lower() not in b.title.lower():
+                continue
 
             if category and (not b.categories or not any(category.lower() in cat.lower() for cat in b.categories)):
                 continue

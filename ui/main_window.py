@@ -19,18 +19,65 @@ import requests
 #print("GOOGLE BOOKS FILE:", api.google_books.__file__)
 
 
+class ReadBooksWindow(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setWindowTitle("Přečtené knihy")
+        self.resize(350, 400)
+
+        layout = QVBoxLayout()
+
+        self.list_widget = QListWidget()
+        layout.addWidget(self.list_widget)
+
+        self.btn_delete = QPushButton("Smazat vybranou knihu")
+        self.btn_delete.clicked.connect(self.delete_selected)
+        layout.addWidget(self.btn_delete)
+
+        self.btn_back = QPushButton("Zpět")
+        self.btn_back.clicked.connect(self.back)
+        layout.addWidget(self.btn_back)
+
+        self.setLayout(layout)
+
+        self.load_books()
+
+    def load_books(self):
+        self.list_widget.clear()
+        books = Storage.load_read_books()
+
+        for book in books:
+            item = QListWidgetItem(f"{book.title} – {', '.join(book.authors)}")
+            item.setData(Qt.UserRole, book.id)
+            self.list_widget.addItem(item)
+
+    def delete_selected(self):
+        item = self.list_widget.currentItem()
+        if not item:
+            return
+
+        book_id = item.data(Qt.UserRole)
+        Storage.delete_read_book(book_id)
+        self.load_books()
+
+    def back(self):
+        self.close()
+
+
+
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
-
-        self.current_book = None
-        self.read_list = QListWidget()
-        self.load_read_books_to_list()
 
         self.setWindowTitle("Doporučovač Knih")
         self.resize(400, 600)
 
         layout = QVBoxLayout()
+
+        self.input_title = QLineEdit()
+        self.input_title.setPlaceholderText("Zadejte nazev např. 'Kokotopia'")
+        layout.addWidget(self.input_title)
 
         self.input_category = QLineEdit()
         self.input_category.setPlaceholderText("Zadejte kategorii např. 'Science Fiction'")
@@ -48,20 +95,17 @@ class MainWindow(QWidget):
         self.btn_params.clicked.connect(self.recommend_by_params)
         layout.addWidget(self.btn_params)
 
-        self.btn_add_read = QPushButton("Přidat do přečtených")
-        self.btn_add_read.clicked.connect(self.add_to_read)
-        layout.addWidget(self.btn_add_read)
-
         self.btn_read = QPushButton("Doporučit podle přečtených knih")
         self.btn_read.clicked.connect(self.recommend_by_read)
         layout.addWidget(self.btn_read)
 
-        layout.addWidget(QLabel("Přečtené knihy:"))
-        layout.addWidget(self.read_list)
+        self.btn_add_read = QPushButton("Přidat do přečtených")
+        self.btn_add_read.clicked.connect(self.add_to_read)
+        layout.addWidget(self.btn_add_read)
 
-        self.btn_delete = QPushButton("Smazat vybranou knihu")
-        self.btn_delete.clicked.connect(self.delete_selected_book)
-        layout.addWidget(self.btn_delete)
+        self.btn_open_read = QPushButton("Zobrazit přečtené knihy")
+        self.btn_open_read.clicked.connect(self.open_read_books)
+        layout.addWidget(self.btn_open_read)
 
         self.result = QLabel()
         self.result.setWordWrap(True)
@@ -71,8 +115,11 @@ class MainWindow(QWidget):
         layout.addWidget(self.cover)
 
         self.setLayout(layout)
-
-        self.test_api_connection()
+        
+        self.current_book = None
+    def open_read_books(self):
+        self.read_books_window = ReadBooksWindow(self)
+        self.read_books_window.show()
 
 
     def show_book(self, book):
@@ -89,6 +136,7 @@ class MainWindow(QWidget):
 
 
     def recommend_by_params(self):
+        title = self.input_title.text()
         category = self.input_category.text()
         author = self.input_author.text()
         pages = self.input_pages.text()
@@ -96,6 +144,8 @@ class MainWindow(QWidget):
 
         # Sestavení vyhledávacího dotazu
         query_parts = []
+        if title:
+            query_parts.append(f"title:{title}")
         if category:
             query_parts.append(f"subject:{category}")
         if author:
@@ -104,7 +154,7 @@ class MainWindow(QWidget):
         query = "+".join(query_parts) if query_parts else "book"
         
         books = GoogleBooksAPI.search(query)
-        book = Recommender.recommend_from_params(books, category, author, pages)
+        book = Recommender.recommend_from_params(books,title, category, author, pages)
 
         self.show_book(book)
 
@@ -135,29 +185,9 @@ class MainWindow(QWidget):
             return
 
         Storage.save_read_book(self.current_book)
-        self.load_read_books_to_list()
         self.result.setText("Kniha byla přidána do přečtených.")
 
-    def load_read_books_to_list(self):
-        self.read_list.clear()
-        books = Storage.load_read_books()
 
-        for book in books:
-            item = QListWidgetItem(f"{book.title} – {', '.join(book.authors)}")
-            item.setData(Qt.UserRole, book.id) 
-            self.read_list.addItem(item)
-
-    def delete_selected_book(self):
-        item = self.read_list.currentItem()
-
-        if not item:
-            self.result.setText("Vyber knihu, kterou chceš smazat.")
-            return
-        
-        book_id = item.data(Qt.UserRole)
-        Storage.delete_read_book(book_id)
-        self.load_read_books_to_list()
-        self.result.setText("Kniha byla smazána ze seznamu.")
 
     def test_api_connection(self):
         if GoogleBooksAPI.test_connection():
@@ -169,7 +199,5 @@ class MainWindow(QWidget):
                 "Nelze se připojit ke Google Books API.\n"
                 "Zkontrolujte připojení k internetu."
             )
-
-
 
         

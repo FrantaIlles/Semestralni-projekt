@@ -27,29 +27,28 @@ class Recommender:
         return score
     
     @staticmethod
-    def recommend_from_read(read_books, candidates):
-        best_book = None
-        best_score = -1
-        
+    def recommend_from_read(read_books, candidates, count=5):
         # ID již přečtených knih
         read_ids = {book.id for book in read_books}
-
+        
+        scored_books = []
+        
         for c in candidates:
             # Přeskočit již přečtené knihy
             if c.id in read_ids:
                 continue
                 
             score = sum(Recommender.similarity(r, c) for r in read_books)
-
-            if score > best_score:
-                best_score = score
-                best_book = c
-
-        return best_book
+            scored_books.append((c, score))
+        
+        # Seřadit podle skóre a vrátit top N
+        scored_books.sort(key=lambda x: x[1], reverse=True)
+        return [book for book, score in scored_books[:count]]
     
     @staticmethod
-    def recommend_from_params(books,title = None, category=None, author=None, min_pages=None):
-
+    def recommend_from_params(books, title=None, category=None, author=None, min_pages=None, count=5):
+        results = []
+        
         for b in books:
             if title and title.lower() not in b.title.lower():
                 continue
@@ -63,6 +62,9 @@ class Recommender:
             if min_pages and (not b.pageCount or b.pageCount < min_pages):
                 continue
 
-            return b
+            results.append(b)
+            
+            if len(results) >= count:
+                break
         
-        return None
+        return results

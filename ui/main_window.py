@@ -5,7 +5,8 @@ from PyQt5.QtWidgets import (
     QLabel,
     QLineEdit,
     QListWidget,
-    QListWidgetItem
+    QListWidgetItem,
+    QTextEdit
 )
 from PyQt5.QtGui import QPixmap
 from api.google_books import GoogleBooksAPI
@@ -24,7 +25,7 @@ class ReadBooksWindow(QWidget):
         super().__init__(parent)
 
         self.setWindowTitle("Přečtené knihy")
-        self.resize(350, 400)
+        self.resize(400, 600)
 
         layout = QVBoxLayout()
 
@@ -99,6 +100,11 @@ class MainWindow(QWidget):
         self.btn_read.clicked.connect(self.recommend_by_read)
         layout.addWidget(self.btn_read)
 
+        # Seznam doporučených knih
+        self.book_list = QListWidget()
+        self.book_list.itemClicked.connect(self.on_book_selected)
+        layout.addWidget(self.book_list)
+
         self.btn_add_read = QPushButton("Přidat do přečtených")
         self.btn_add_read.clicked.connect(self.add_to_read)
         layout.addWidget(self.btn_add_read)
@@ -107,8 +113,10 @@ class MainWindow(QWidget):
         self.btn_open_read.clicked.connect(self.open_read_books)
         layout.addWidget(self.btn_open_read)
 
-        self.result = QLabel()
-        self.result.setWordWrap(True)
+        # Detail vybrané knihy
+        self.result = QTextEdit()
+        self.result.setReadOnly(True)
+        self.result.setMaximumHeight(150)
         layout.addWidget(self.result)
 
         self.cover = QLabel()
@@ -117,6 +125,8 @@ class MainWindow(QWidget):
         self.setLayout(layout)
         
         self.current_book = None
+        self.recommended_books = []
+
     def open_read_books(self):
         self.read_books_window = ReadBooksWindow(self)
         self.read_books_window.show()
@@ -135,6 +145,38 @@ class MainWindow(QWidget):
         )
 
 
+    def show_books(self, books):
+        self.book_list.clear()
+        self.recommended_books = books
+        
+        if not books:
+            self.result.setText("Nebyly nalezeny žádné knihy.")
+            return
+        
+        for book in books:
+            authors = ', '.join(book.authors) if book.authors else "Neznámý autor"
+            item = QListWidgetItem(f"{book.title} – {authors}")
+            item.setData(Qt.UserRole, book)
+            self.book_list.addItem(item)
+        
+        self.result.setText(f"Nalezeno {len(books)} knih. Vyberte jednu ze seznamu.")
+
+    def on_book_selected(self, item):
+        book = item.data(Qt.UserRole)
+        self.current_book = book
+        
+        authors = ', '.join(book.authors) if book.authors else "Neznámý"
+        categories = ', '.join(book.categories) if book.categories else "Neznámá"
+        description = book.description[:300] + "..." if book.description and len(book.description) > 300 else (book.description or "Bez popisu")
+        
+        self.result.setText(
+            f"<b>Název:</b> {book.title}<br>"
+            f"<b>Autor:</b> {authors}<br>"
+            f"<b>Kategorie:</b> {categories}<br>"
+            f"<b>Počet stran:</b> {book.pageCount or 'N/A'}<br><br>"
+            f"<b>Popis:</b> {description}"
+        )
+
     def recommend_by_params(self):
         title = self.input_title.text()
         category = self.input_category.text()
@@ -142,7 +184,6 @@ class MainWindow(QWidget):
         pages = self.input_pages.text()
         pages = int(pages) if pages.isdigit() else None
 
-        # Sestavení vyhledávacího dotazu
         query_parts = []
         if title:
             query_parts.append(f"title:{title}")
@@ -154,9 +195,9 @@ class MainWindow(QWidget):
         query = "+".join(query_parts) if query_parts else "book"
         
         books = GoogleBooksAPI.search(query)
-        book = Recommender.recommend_from_params(books,title, category, author, pages)
+        recommended = Recommender.recommend_from_params(books, title, category, author, pages, count=5)
 
-        self.show_book(book)
+        self.show_books(recommended)
 
     def recommend_by_read(self):
         read_books = Storage.load_read_books()
@@ -165,7 +206,6 @@ class MainWindow(QWidget):
             self.result.setText("Nemáte uložené žádné přečtené knihy.")
             return
         
-        # Preferovat autora z poslední přečtené knihy
         last_book = read_books[-1]
         if last_book.authors:
             query = f"inauthor:{last_book.authors[0]}"
@@ -176,8 +216,8 @@ class MainWindow(QWidget):
             
         candidates = GoogleBooksAPI.search(query)
 
-        book = Recommender.recommend_from_read(read_books, candidates)
-        self.show_book(book)
+        recommended = Recommender.recommend_from_read(read_books, candidates, count=5)
+        self.show_books(recommended)
 
     def add_to_read(self):
         if not self.current_book:
@@ -200,4 +240,3 @@ class MainWindow(QWidget):
                 "Zkontrolujte připojení k internetu."
             )
 
-        

@@ -22,10 +22,9 @@ import requests
 
 class ReadBooksWindow(QWidget):
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__()
 
         self.setWindowTitle("Přečtené knihy")
-        self.resize(400, 600)
 
         layout = QVBoxLayout()
 
@@ -128,7 +127,10 @@ class MainWindow(QWidget):
         self.recommended_books = []
 
     def open_read_books(self):
-        self.read_books_window = ReadBooksWindow(self)
+        self.read_books_window = ReadBooksWindow()
+        # Převzetí velikosti a pozice hlavního okna
+        self.read_books_window.resize(self.size())
+        self.read_books_window.move(self.pos())
         self.read_books_window.show()
 
 

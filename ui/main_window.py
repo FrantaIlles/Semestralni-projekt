@@ -198,14 +198,22 @@ class MainWindow(QWidget):
             self.result.setText("Zadejte alespoň jeden parametr pro vyhledávání.")
             return
 
-        query = title or category or author or "book"
+        query_parts = []
+        if title:
+            query_parts.append(f'intitle:"{title}"')  
+        if author:
+            query_parts.append(f'inauthor:"{author}"') 
+        if category:
+            query_parts.append(f'subject:"{category}"') 
+
+        query = " ".join(query_parts) if query_parts else "book"
         
         print(f"Vyhledávací dotaz: {query}")
-        books = CombinedSearch.search(query, category=category if category else None)
+        books = CombinedSearch.search(query, category=category if category else None, max_results=40)
         print(f"Nalezeno knih: {len(books)}")
         
         # Filtruj podle zadaných parametrů
-        recommended = Recommender.recommend_from_params(books, title=title if title else None, category=category if category else None, author=author if author else None, min_pages=pages, count=10)
+        recommended = Recommender.recommend_from_params(books, min_pages=pages, count=10)
         print(f"Doporučeno knih: {len(recommended)}")
         
         self.show_books(recommended)

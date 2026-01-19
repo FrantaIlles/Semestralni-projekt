@@ -7,13 +7,6 @@ class CombinedSearch:
         google_books = GoogleBooksAPI.search(query, max_results=max_results//2)
         open_library_books = OpenLibraryAPI.search(query, category=category, max_results=max_results//2)
         
-        # Filtruj jen knihy s požadovanou kategorií
-        if category:
-            google_books = [b for b in google_books if b.categories and 
-                           any(category.lower() in cat.lower() for cat in b.categories)]
-            open_library_books = [b for b in open_library_books if b.categories and 
-                                 any(category.lower() in cat.lower() for cat in b.categories)]
-        
         # Sloučit a odstranit duplikáty (podle názvu a autora)
         seen = set()
         combined = []

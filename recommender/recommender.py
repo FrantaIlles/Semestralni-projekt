@@ -46,26 +46,10 @@ class Recommender:
         return [book for book, score in scored_books[:count]]
     
     @staticmethod
-    def recommend_from_params(books, title=None, category=None, author=None, min_pages=None, count=5):
+    def recommend_from_params(books,min_pages=None, count=5):
         results = []
         
         for b in books:
-            if title and title.lower() not in b.title.lower():
-                continue
-
-            if category:
-                if not b.categories:
-                    continue
-                category_words = category.lower().split()
-                category_match = any(
-                    all(word in cat.lower() for word in category_words)
-                    for cat in b.categories
-                )
-                if not category_match:
-                    continue
-
-            if author and (not b.authors or not any(author.lower() in aut.lower() for aut in b.authors)):
-                continue
 
             if min_pages and (not b.pageCount or b.pageCount < min_pages):
                 continue

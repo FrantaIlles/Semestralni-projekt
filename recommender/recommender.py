@@ -53,8 +53,16 @@ class Recommender:
             if title and title.lower() not in b.title.lower():
                 continue
 
-            if category and (not b.categories or not any(category.lower() in cat.lower() for cat in b.categories)):
-                continue
+            if category:
+                if not b.categories:
+                    continue
+                category_words = category.lower().split()
+                category_match = any(
+                    all(word in cat.lower() for word in category_words)
+                    for cat in b.categories
+                )
+                if not category_match:
+                    continue
 
             if author and (not b.authors or not any(author.lower() in aut.lower() for aut in b.authors)):
                 continue

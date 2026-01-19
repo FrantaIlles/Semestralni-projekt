@@ -31,5 +31,5 @@ class GoogleBooksAPI:
 
         if "items" not in data:
             return []
-        
-        return [Book.from_api(item) for item in data["items"]]
+        books = [Book.from_api(item) for item in data["items"]]
+        return books

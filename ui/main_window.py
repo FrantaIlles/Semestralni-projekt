@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (
     QListWidgetItem,
     QTextEdit
 )
+from PyQt5.QtGui import QIcon
 from PyQt5.QtGui import QPixmap
 from api.google_books import GoogleBooksAPI
 from models import book
@@ -16,6 +17,7 @@ from recommender.recommender import Recommender
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox
 import requests
+import os
 #import api.google_books
 #print("GOOGLE BOOKS FILE:", api.google_books.__file__)
 
@@ -25,6 +27,8 @@ class ReadBooksWindow(QWidget):
         super().__init__()
 
         self.setWindowTitle("Přečtené knihy")
+        icon_path = os.path.join(os.path.dirname(__file__), "ikona.jpg")
+        self.setWindowIcon(QIcon(icon_path))
 
         layout = QVBoxLayout()
 
@@ -69,14 +73,16 @@ class ReadBooksWindow(QWidget):
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
-
+        icon_path = os.path.join(os.path.dirname(__file__), "ikona.jpg")
+        self.setWindowIcon(QIcon(icon_path))
         self.setWindowTitle("Doporučovač Knih")
         self.resize(400, 600)
+        
 
         layout = QVBoxLayout()
 
         self.input_title = QLineEdit()
-        self.input_title.setPlaceholderText("Zadejte nazev např. 'Kokotopia'")
+        self.input_title.setPlaceholderText("Zadejte nazev např. 'Harry Potter'")
         layout.addWidget(self.input_title)
 
         self.input_category = QLineEdit()
@@ -180,25 +186,40 @@ class MainWindow(QWidget):
         )
 
     def recommend_by_params(self):
-        title = self.input_title.text()
-        category = self.input_category.text()
-        author = self.input_author.text()
-        pages = self.input_pages.text()
+        title = self.input_title.text().strip()
+        category = self.input_category.text().strip()
+        author = self.input_author.text().strip()
+        pages = self.input_pages.text().strip()
         pages = int(pages) if pages.isdigit() else None
 
+        if not title and not category and not author and not pages:
+            self.result.setText("Zadejte alespoň jeden parametr pro vyhledávání.")
+            return
+
         query_parts = []
+    
+    # Přidej parametry do dotazu
         if title:
-            query_parts.append(f"title:{title}")
-        if category:
-            query_parts.append(f"subject:{category}")
+            query_parts.append(f"intitle:{title}")
         if author:
             query_parts.append(f"inauthor:{author}")
-        
-        query = "+".join(query_parts) if query_parts else "book"
-        
+        if category:
+            query_parts.append(f"subject:{category}")
+    
+    # Pokud je zadán jen počet stran, hledej obecně knihy
+        if not query_parts:
+            query = "book"
+        else:
+            query = "+".join(query_parts)
+    
+        print(f"Vyhledávací dotaz: {query}")  
         books = GoogleBooksAPI.search(query)
-        recommended = Recommender.recommend_from_params(books, title, category, author, pages, count=5)
-
+        print(f"Nalezeno knih před filtrováním: {len(books)}")  
+    
+    # Filtruj podle zadaných parametrů
+        recommended = Recommender.recommend_from_params(books, title=title if title else None, category=category if category else None, author=author if author else None, min_pages=pages, count=5)
+        print(f"Doporučeno knih: {len(recommended)}")  
+    
         self.show_books(recommended)
 
     def recommend_by_read(self):
@@ -241,4 +262,3 @@ class MainWindow(QWidget):
                 "Nelze se připojit ke Google Books API.\n"
                 "Zkontrolujte připojení k internetu."
             )
-

@@ -11,6 +11,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QIcon
 from PyQt5.QtGui import QPixmap
 from api.google_books import GoogleBooksAPI
+from api.open_library import OpenLibraryAPI
+from api.combined_search import CombinedSearch
 from models import book
 from models.storage import Storage
 from recommender.recommender import Recommender
@@ -196,30 +198,16 @@ class MainWindow(QWidget):
             self.result.setText("Zadejte alespoň jeden parametr pro vyhledávání.")
             return
 
-        query_parts = []
-    
-    # Přidej parametry do dotazu
-        if title:
-            query_parts.append(f"intitle:{title}")
-        if author:
-            query_parts.append(f"inauthor:{author}")
-        if category:
-            query_parts.append(f"subject:{category}")
-    
-    # Pokud je zadán jen počet stran, hledej obecně knihy
-        if not query_parts:
-            query = "book"
-        else:
-            query = "+".join(query_parts)
-    
-        print(f"Vyhledávací dotaz: {query}")  
-        books = GoogleBooksAPI.search(query)
-        print(f"Nalezeno knih před filtrováním: {len(books)}")  
-    
-    # Filtruj podle zadaných parametrů
-        recommended = Recommender.recommend_from_params(books, title=title if title else None, category=category if category else None, author=author if author else None, min_pages=pages, count=5)
-        print(f"Doporučeno knih: {len(recommended)}")  
-    
+        query = title or category or author or "book"
+        
+        print(f"Vyhledávací dotaz: {query}")
+        books = CombinedSearch.search(query, category=category if category else None)
+        print(f"Nalezeno knih: {len(books)}")
+        
+        # Filtruj podle zadaných parametrů
+        recommended = Recommender.recommend_from_params(books, title=title if title else None, category=category if category else None, author=author if author else None, min_pages=pages, count=10)
+        print(f"Doporučeno knih: {len(recommended)}")
+        
         self.show_books(recommended)
 
     def recommend_by_read(self):
@@ -237,7 +225,7 @@ class MainWindow(QWidget):
         else:
             query = "book"
             
-        candidates = GoogleBooksAPI.search(query)
+        candidates = CombinedSearch.search(query)
 
         recommended = Recommender.recommend_from_read(read_books, candidates, count=5)
         self.show_books(recommended)
@@ -253,12 +241,15 @@ class MainWindow(QWidget):
 
 
     def test_api_connection(self):
-        if GoogleBooksAPI.test_connection():
-            self.result.setText("✅ Spojení s Google Books API je funkční.")
+        google_ok = GoogleBooksAPI.test_connection()
+        open_lib_ok = OpenLibraryAPI.test_connection()
+    
+        if google_ok or open_lib_ok:
+            message = "Připojení OK!\n"
+            if google_ok:
+                message += "✓ Google Books API\n"
+            if open_lib_ok:
+                message += "✓ Open Library API\n"
+            QMessageBox.information(self, "Připojení", message)
         else:
-            QMessageBox.critical(
-                self,
-                "Chyba připojení",
-                "Nelze se připojit ke Google Books API.\n"
-                "Zkontrolujte připojení k internetu."
-            )
+            QMessageBox.warning(self, "Chyba", "Žádné API není dostupné!")

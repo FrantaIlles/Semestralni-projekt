@@ -55,8 +55,8 @@ python main.py
 - Aplikace kombinuje výsledky z **Google Books API** a **Open Library API** – získáte až 40 výsledků (20 z každého zdroje).
 - Kategorie vracené API mohou mít různé formáty; zkuste obecnější klíčová slova jako „Fiction", „Drama".
 - **Doporučovací algoritmus** hodnotí knihy podle:
-  - Shody v kategorii (5 bodů za každou shodnou kategorii)
+  - Shody v kategorii (10 bodů za každou shodnou kategorii)
   - Shody v autorovi (20 bodů za každého stejného autora)
-  - Podobného počtu stran (3 body, pokud se liší max. o 30 stran)
+  - Podobného počtu stran (5 body, pokud se liší max. o 30 stran)
   - Podobnosti názvů (15 bodů za každé společné smysluplné slovo – detekce série)
   - Aplikace automaticky testuje dostupnost obou API při spuštění.

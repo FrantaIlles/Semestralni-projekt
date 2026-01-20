@@ -4,14 +4,14 @@ class Recommender:
         score = 0
 
         if b1.categories and b2.categories:
-            score += len(set(b1.categories) & set(b2.categories)) * 5
+            score += len(set(b1.categories) & set(b2.categories)) * 10
 
         if b1.authors and b2.authors:
             score += len(set(b1.authors) & set(b2.authors)) * 20
 
         if b1.pageCount and b2.pageCount:
             if abs(b1.pageCount - b2.pageCount) <= 30:
-                score += 3
+                score += 5
         
         # Bonus za podobný název (detekce série)
         if b1.title and b2.title:

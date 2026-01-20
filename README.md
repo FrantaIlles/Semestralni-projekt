@@ -2,6 +2,8 @@
 
 Desktopová aplikace v **Pythonu (PyQt5)**, která doporučí knihy podle vámi zadaných parametrů nebo podle již přečtených titulů. Data načítá z **Google Books API** a **Open Library API** pro širší pokrytí výsledků.
 
+Cíle projektu vytvořit funkční aplikaci, která uživateli doporučuje knihy. Napojená na API s knihami, které doporučuje.
+
 ## Funkce
 - **Vyhledání a doporučení knih** podle:
   - názvu (nebo části názvu)

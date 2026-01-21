@@ -70,8 +70,8 @@ class Recommender:
             if c.authors:
                 for author in c.authors:
                     if author in author_counts:
-                        # Čím víc knih od autora, tím víc bodů (20 za první, +20 za každou další)
-                        bonus = 20 + (author_counts[author] - 1) * 10
+                        # Čím víc knih od autora, tím víc bodů (15 za první, +5 za každou další)
+                        bonus = 15 + (author_counts[author] - 1) * 5
                         total_score += bonus
             
             if total_score > 0:

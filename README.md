@@ -71,9 +71,9 @@ Aplikace hodnotí kandidátní knihy podle následujících kritérií:
   - 10 bodů bonus, pokud začínají stejným slovem (detekce série)
 
 ### Progresivní bonus za autora
-- **1. přečtená kniha** od autora: +20 bodů
-- **2. přečtená kniha** od autora: +30 bodů
-- **3. přečtená kniha** od autora: +40 bodů
+- **1. přečtená kniha** od autora: +15 bodů
+- **2. přečtená kniha** od autora: +20 bodů
+- **3. přečtená kniha** od autora: +25 bodů
 - atd. (+10 bodů za každou další)
 
 ### Vyhledávání kandidátů

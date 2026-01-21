@@ -62,7 +62,7 @@ Aplikace hodnotí kandidátní knihy podle následujících kritérií:
 
 ### Bodování podobnosti
 - **Shoda v kategorii**: 10 bodů za každou shodnou kategorii
-- **Shoda v autorovi**: 30 bodů za každého stejného autora
+- **Shoda v autorovi**: 20 bodů za každého stejného autora
 - **Podobný počet stran**: 
   - 15 bodů, pokud se liší max. o 30 stran
   - 8 bodů, pokud se liší o 31-60 stran
@@ -71,10 +71,10 @@ Aplikace hodnotí kandidátní knihy podle následujících kritérií:
   - 10 bodů bonus, pokud začínají stejným slovem (detekce série)
 
 ### Progresivní bonus za autora
-- **1. přečtená kniha** od autora: +50 bodů
-- **2. přečtená kniha** od autora: +70 bodů
-- **3. přečtená kniha** od autora: +90 bodů
-- atd. (+20 bodů za každou další)
+- **1. přečtená kniha** od autora: +20 bodů
+- **2. přečtená kniha** od autora: +30 bodů
+- **3. přečtená kniha** od autora: +40 bodů
+- atd. (+10 bodů za každou další)
 
 ### Vyhledávání kandidátů
 - Hledá knihy od **všech přečtených autorů** (podle příjmení i celého jména)

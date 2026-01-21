@@ -13,7 +13,7 @@ class Recommender:
         # Autoři (přímé porovnání)
         if b1.authors and b2.authors:
             common_auth = set(b1.authors) & set(b2.authors)
-            score += len(common_auth) * 30
+            score += len(common_auth) * 20
 
         # Počet stran
         if b1.pageCount and b2.pageCount:
@@ -70,8 +70,8 @@ class Recommender:
             if c.authors:
                 for author in c.authors:
                     if author in author_counts:
-                        # Čím víc knih od autora, tím víc bodů (50 za první, +20 za každou další)
-                        bonus = 50 + (author_counts[author] - 1) * 20
+                        # Čím víc knih od autora, tím víc bodů (20 za první, +20 za každou další)
+                        bonus = 20 + (author_counts[author] - 1) * 10
                         total_score += bonus
             
             if total_score > 0:

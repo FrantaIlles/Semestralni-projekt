@@ -1,1 +1,37 @@
-[]
+[
+  {
+    "id": "uu690QEACAAJ",
+    "title": "Harry Potter a tajemná komnata",
+    "authors": [
+      "J. K. Rowling"
+    ],
+    "categories": [],
+    "description": "Výpravné vydání dalších dobrodružství Harryho Pottera, který se po prázdninách opět vrací do bradavické školy pro čaroděje. Harry postoupí do 2. ročníku. Ve škole se však začínají dít hrůzostrašné věci. Několik studentů a kočka se stanou oběťmi tajemného stvoření. Zavládne panika. Žáci se dozvídají o Tajemné komnatě, v níž je nestvůra ukryta. Povídá se, že škola má být očištěna od všech, kteří nejsou hodni studovat kouzelná umění. Harry a jeho přátelé se pokusí vypátrat, kdo za tím vším stojí, kdo je oním Zmijozelovým dědicem, který, jako jediný, může Tajemnou komnatu otevřít.",
+    "pageCount": 0,
+    "thumbnail": null
+  },
+  {
+    "id": "rE_OAQAACAAJ",
+    "title": "Pán prstenů",
+    "authors": [
+      "John Ronald Reuel Tolkien"
+    ],
+    "categories": [],
+    "description": "",
+    "pageCount": 315,
+    "thumbnail": null
+  },
+  {
+    "id": "-rUACwAAQBAJ",
+    "title": "It",
+    "authors": [
+      "Stephen King"
+    ],
+    "categories": [
+      "Fiction"
+    ],
+    "description": "Stephen King’s classic #1 New York Times bestseller and the basis for the massively successful films It: Chapter One and It: Chapter Two as well as inspiration for HBO Max’s series It: Welcome to Derry—about seven adults who return to their hometown to confront a nightmare they had first stumbled upon as teenagers...an evil without a name: It. Welcome to Derry, Maine. It’s a small city, a place as hauntingly familiar as your own hometown. Only in Derry the haunting is real. They were seven teenagers when they first stumbled upon the horror. Now they are grown-up men and women who have gone out into the big world to gain success and happiness. But the promise they made twenty-eight years ago calls them reunite in the same place where, as teenagers, they battled an evil creature that preyed on the city’s children. Now, children are being murdered again and their repressed memories of that terrifying summer return as they prepare to once again battle the monster lurking in Derry’s sewers. Readers of Stephen King know that Derry, Maine, is a place with a deep, dark hold on the author. It reappears in many of his books, including Bag of Bones, Hearts in Atlantis, and 11/22/63. But it all starts with It. “Stephen King’s most mature work” (St. Petersburg Times), “It will overwhelm you…to be read in a well-lit room only” (Los Angeles Times).",
+    "pageCount": 1168,
+    "thumbnail": "http://books.google.com/books/content?id=-rUACwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api"
+  }
+]

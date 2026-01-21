@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
     QTextEdit
 )
 from PyQt5.QtGui import QIcon
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QFont
 from api.google_books import GoogleBooksAPI
 from api.open_library import OpenLibraryAPI
 from api.combined_search import CombinedSearch
@@ -20,8 +20,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox
 import requests
 import os
-#import api.google_books
-#print("GOOGLE BOOKS FILE:", api.google_books.__file__)
 
 
 class ReadBooksWindow(QWidget):
@@ -32,16 +30,26 @@ class ReadBooksWindow(QWidget):
         icon_path = os.path.join(os.path.dirname(__file__), "ikona.jpg")
         self.setWindowIcon(QIcon(icon_path))
 
+        font = QFont()
+        font.setPointSize(11)
+        self.setFont(font)
+
+
         layout = QVBoxLayout()
 
         self.list_widget = QListWidget()
+        self.list_widget.setFont(QFont("Arial", 11))
         layout.addWidget(self.list_widget)
 
         self.btn_delete = QPushButton("Smazat vybranou knihu")
+        self.btn_delete.setMinimumHeight(40)
+        self.btn_delete.setFont(QFont("Arial", 11))
         self.btn_delete.clicked.connect(self.delete_selected)
         layout.addWidget(self.btn_delete)
 
         self.btn_back = QPushButton("Zpět")
+        self.btn_back.setMinimumHeight(40)
+        self.btn_back.setFont(QFont("Arial", 11))
         self.btn_back.clicked.connect(self.back)
         layout.addWidget(self.btn_back)
 
@@ -78,52 +86,74 @@ class MainWindow(QWidget):
         icon_path = os.path.join(os.path.dirname(__file__), "ikona.jpg")
         self.setWindowIcon(QIcon(icon_path))
         self.setWindowTitle("Doporučovač Knih")
-        self.resize(400, 600)
-        
+        self.resize(600, 800)
+
+        font = QFont()
+        font.setPointSize(11)
+        self.setFont(font)
+
 
         layout = QVBoxLayout()
 
         self.input_title = QLineEdit()
         self.input_title.setPlaceholderText("Zadejte nazev např. 'Harry Potter'")
+        self.input_title.setMinimumHeight(35)
+        self.input_title.setFont(QFont("Arial", 11))
         layout.addWidget(self.input_title)
 
         self.input_category = QLineEdit()
         self.input_category.setPlaceholderText("Zadejte kategorii např. 'Science Fiction'")
+        self.input_category.setMinimumHeight(35)
+        self.input_category.setFont(QFont("Arial", 11))
         layout.addWidget(self.input_category)
 
         self.input_author = QLineEdit()
         self.input_author.setPlaceholderText("Zadejte autora (volitelné)")
+        self.input_author.setMinimumHeight(35)
+        self.input_author.setFont(QFont("Arial", 11))
         layout.addWidget(self.input_author)
 
         self.input_pages = QLineEdit()
         self.input_pages.setPlaceholderText("Minimální počet stran (volitelné)")
+        self.input_pages.setMinimumHeight(35)
+        self.input_pages.setFont(QFont("Arial", 11))
         layout.addWidget(self.input_pages)
 
         self.btn_params = QPushButton("Doporučit podle parametrů")
+        self.btn_params.setMinimumHeight(45)
+        self.btn_params.setFont(QFont("Arial", 12, QFont.Bold))
         self.btn_params.clicked.connect(self.recommend_by_params)
         layout.addWidget(self.btn_params)
 
         self.btn_read = QPushButton("Doporučit podle přečtených knih")
+        self.btn_read.setMinimumHeight(45)
+        self.btn_read.setFont(QFont("Arial", 12, QFont.Bold))
         self.btn_read.clicked.connect(self.recommend_by_read)
         layout.addWidget(self.btn_read)
 
         # Seznam doporučených knih
         self.book_list = QListWidget()
+        self.book_list.setFont(QFont("Arial", 11))
         self.book_list.itemClicked.connect(self.on_book_selected)
         layout.addWidget(self.book_list)
 
         self.btn_add_read = QPushButton("Přidat do přečtených")
+        self.btn_add_read.setMinimumHeight(40)
+        self.btn_add_read.setFont(QFont("Arial", 11))
         self.btn_add_read.clicked.connect(self.add_to_read)
         layout.addWidget(self.btn_add_read)
 
         self.btn_open_read = QPushButton("Zobrazit přečtené knihy")
+        self.btn_open_read.setMinimumHeight(40)
+        self.btn_open_read.setFont(QFont("Arial", 11))
         self.btn_open_read.clicked.connect(self.open_read_books)
         layout.addWidget(self.btn_open_read)
 
         # Detail vybrané knihy
         self.result = QTextEdit()
         self.result.setReadOnly(True)
-        self.result.setMaximumHeight(150)
+        self.result.setMaximumHeight(200)
+        self.result.setFont(QFont("Arial", 11))
         layout.addWidget(self.result)
 
         self.cover = QLabel()
@@ -140,19 +170,6 @@ class MainWindow(QWidget):
         self.read_books_window.resize(self.size())
         self.read_books_window.move(self.pos())
         self.read_books_window.show()
-
-
-    def show_book(self, book):
-        if not book:
-            self.result.setText("Nebyla nalezena žádná kniha.")
-            return
-
-        self.current_book = book
-        self.result.setText(
-            f"Název: {book.title}\n"
-            f"Autor: {', '.join(book.authors)}\n"
-            f"Kategorie: {', '.join(book.categories)}"
-        )
 
 
     def show_books(self, books):
@@ -224,18 +241,67 @@ class MainWindow(QWidget):
         if not read_books:
             self.result.setText("Nemáte uložené žádné přečtené knihy.")
             return
-        
-        last_book = read_books[-1]
-        if last_book.authors:
-            query = f"inauthor:{last_book.authors[0]}"
-        elif last_book.categories:
-            query = f"subject:{last_book.categories[0]}"
-        else:
-            query = "book"
-            
-        candidates = CombinedSearch.search(query)
 
-        recommended = Recommender.recommend_from_read(read_books, candidates, count=5)
+        print(f"Přečtených knih: {len(read_books)}")
+        for b in read_books:
+            print(f"  - {b.title} (autoři: {b.authors}, kategorie: {b.categories})")
+
+        authors = []
+        categories = []
+        
+        for b in read_books:
+            if b.authors:
+                authors.extend(b.authors)
+            if b.categories:
+                categories.extend(b.categories)
+
+        authors = list(set(authors))
+        categories = list(set(categories))
+
+        print(f"Autoři: {authors}")
+        print(f"Kategorie: {categories}")
+
+        all_candidates = []
+        
+        # Hledej podle VŠECH autorů
+        if authors:
+            for author in authors:
+                last_name = author.split()[-1] if author else ""
+                if last_name and len(last_name) > 2:
+                    for search_term in [last_name, author]:
+                        author_query = f'inauthor:{search_term}'
+                        print(f"Hledám autora: {author_query}")
+                        candidates = CombinedSearch.search(author_query, max_results=20)
+                        print(f"  → Nalezeno: {len(candidates)}")
+                        
+                        all_candidates.extend(candidates)  # Přidej všechny
+                        
+                        if candidates:
+                            break  # Máme výsledky, nemusíme hledat znovu
+        
+        # Hledej podle kategorií
+        if categories:
+            category_query = " OR ".join([f'subject:"{c}"' for c in categories[:2]])
+            print(f"Hledám kategorie: {category_query}")
+            candidates = CombinedSearch.search(category_query, max_results=30)
+            print(f"  → Nalezeno: {len(candidates)}")
+            all_candidates.extend(candidates)
+
+        # Odstraň duplikáty
+        seen = set()
+        unique_candidates = []
+        for c in all_candidates:
+            if c.id not in seen:
+                seen.add(c.id)
+                unique_candidates.append(c)
+
+        print(f"\nCelkem unikátních kandidátů: {len(unique_candidates)}")
+        
+        recommended = Recommender.recommend_from_read(read_books, unique_candidates, count=15)
+        print(f"\nDoporučeno: {len(recommended)}")
+        for r in recommended:
+            print(f"  - {r.title}")
+        
         self.show_books(recommended)
 
     def add_to_read(self):
@@ -258,6 +324,6 @@ class MainWindow(QWidget):
                 message += "✓ Google Books API\n"
             if open_lib_ok:
                 message += "✓ Open Library API\n"
-            QMessageBox.information(self, "Připojení", message)
+            print(self, "Připojení", message)
         else:
-            QMessageBox.warning(self, "Chyba", "Žádné API není dostupné!")
+            print(self, "Chyba", "Žádné API není dostupné!")

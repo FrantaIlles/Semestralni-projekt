@@ -23,7 +23,6 @@ class OpenLibraryAPI:
             "limit": max_results
         }
         
-        # Pokud hledáš podle kategorie, přidej ji do dotazu
         if category:
             params["q"] = f"{query} subject:{category}"
 
@@ -39,7 +38,7 @@ class OpenLibraryAPI:
                 id=item.get("key", ""),
                 title=item.get("title", ""),
                 authors=item.get("author_name", []),
-                categories=item.get("subject", [])[:5],  # Omezit na 5
+                categories=item.get("subject", [])[:5],
                 description="",
                 pageCount=item.get("number_of_pages_median"),
                 thumbnail=f"https://covers.openlibrary.org/b/id/{item.get('cover_i')}-S.jpg" if item.get("cover_i") else None

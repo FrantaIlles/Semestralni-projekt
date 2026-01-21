@@ -17,7 +17,7 @@ from models import book
 from models.storage import Storage
 from recommender.recommender import Recommender
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox
+#from PyQt5.QtWidgets import QMessageBox
 import requests
 import os
 
@@ -229,7 +229,7 @@ class MainWindow(QWidget):
         books = CombinedSearch.search(query, category=category if category else None, max_results=40)
         print(f"Nalezeno knih: {len(books)}")
         
-        # Filtruj podle zadaných parametrů
+        # Filtrování podle zadaných parametrů
         recommended = Recommender.recommend_from_params(books, min_pages=pages, count=10)
         print(f"Doporučeno knih: {len(recommended)}")
         
@@ -263,7 +263,7 @@ class MainWindow(QWidget):
 
         all_candidates = []
         
-        # Hledej podle VŠECH autorů
+        # Hledání podle všech autorů
         if authors:
             for author in authors:
                 last_name = author.split()[-1] if author else ""
@@ -274,12 +274,12 @@ class MainWindow(QWidget):
                         candidates = CombinedSearch.search(author_query, max_results=20)
                         print(f"  → Nalezeno: {len(candidates)}")
                         
-                        all_candidates.extend(candidates)  # Přidej všechny
+                        all_candidates.extend(candidates) 
                         
                         if candidates:
-                            break  # Máme výsledky, nemusíme hledat znovu
+                            break  
         
-        # Hledej podle kategorií
+        # Hledání podle kategorií
         if categories:
             category_query = " OR ".join([f'subject:"{c}"' for c in categories[:2]])
             print(f"Hledám kategorie: {category_query}")
@@ -287,7 +287,7 @@ class MainWindow(QWidget):
             print(f"  → Nalezeno: {len(candidates)}")
             all_candidates.extend(candidates)
 
-        # Odstraň duplikáty
+        # Odstranění duplikátů
         seen = set()
         unique_candidates = []
         for c in all_candidates:

@@ -1,4 +1,3 @@
-
 class Recommender:
     @staticmethod
     def similarity(b1, b2):

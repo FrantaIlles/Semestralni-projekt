@@ -48,7 +48,7 @@ python main.py
 2. Do políček můžete zadat libovolnou kombinaci:
    - **Název** (nebo jeho část)
    - **Autor** (nebo část jména - stačí příjmení)
-   - **Kategorie** (žánr, např. "Fiction", "Fantasy")
+   - **Kategorie** (žánr, např. "Fiction")
    - **Min. počet stran**
 3. Klikněte na tlačítko pro doporučení podle parametrů.
 4. Výsledky se zobrazí v seznamu s kombinovanými výsledky z obou API.

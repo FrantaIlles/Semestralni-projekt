@@ -313,7 +313,6 @@ class MainWindow(QWidget):
         self.result.setText("Kniha byla přidána do přečtených.")
 
 
-
     def test_api_connection(self):
         google_ok = GoogleBooksAPI.test_connection()
         open_lib_ok = OpenLibraryAPI.test_connection()

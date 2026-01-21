@@ -36,7 +36,7 @@ class CombinedSearch:
             # deduplikace stejné knihy (název + autoři)
             if key in seen_keys:
                 continue
-            # limituj na 1 kus stejného základního názvu (i když mají různé autory/překladatele)
+            # limituj na 1 kus stejného základního názvu i když mají různé autory/překladatele
             if title_norm in seen_titles:
                 continue
 

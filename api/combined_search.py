@@ -25,7 +25,7 @@ class CombinedSearch:
             open_library_books = []
         
         seen_keys = set()
-        seen_titles = set()
+        #seen_titles = set()
         combined = []
 
         for b in google_books + open_library_books:
@@ -37,11 +37,11 @@ class CombinedSearch:
             if key in seen_keys:
                 continue
             # limituj na 1 kus stejného základního názvu i když mají různé autory/překladatele
-            if title_norm in seen_titles:
-                continue
+            #if title_norm in seen_titles:
+            #   continue
 
             seen_keys.add(key)
-            seen_titles.add(title_norm)
+            #seen_titles.add(title_norm)
             combined.append(b)
 
         # stabilní řazení abecedně podle názvu
